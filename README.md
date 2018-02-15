@@ -78,3 +78,28 @@ var validFilesTypes = ["doc", "docx", "pdf", "jpg", "jpeg", "png"];
             });
             }
     });
+//-----------Home Controller----------------------//
+
+ public JsonResult UploadFile()
+        {
+            string _docname = string.Empty;
+            if (System.Web.HttpContext.Current.Request.Files.AllKeys.Any())
+            {
+                var doc = System.Web.HttpContext.Current.Request.Files["MyImages"];
+                if (doc.ContentLength > 0)
+                {
+                    var fileName = Path.GetFileName(doc.FileName);
+                    var _ext = Path.GetExtension(doc.FileName);
+                    _docname = DateTime.Now.ToString("yyyyMMddHHmmssffff");
+                    string FileSavePath = ConfigurationManager.AppSettings["FileSavePath"];
+                    _docname = "doc_" + _docname + _ext;
+                    var _comPath = Server.MapPath(FileSavePath) + _docname;
+                    ViewBag.Msg = _comPath;
+                    SessionManager.IAttachments = _docname;
+
+                    var path = _comPath;
+                    doc.SaveAs(path);
+                }
+            }
+            return Json(Convert.ToString(_docname), JsonRequestBehavior.AllowGet);
+        }
